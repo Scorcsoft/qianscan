@@ -20,7 +20,7 @@ DOMAIN = ''
 HEADER = []
 OUTPUT = []
 STATUS = []
-THREAD = 1
+THREAD = 50
 OUTPUT_FILE = ''
 NEVER_STOP = False
 TIMEOUT_QUANTITY = 0
@@ -60,8 +60,12 @@ def setRequestHeader(file):
     try:
         for i in open(file):
             tmp = i.split(":")
-            HEADER[tmp[0].string("\n")] = tmp[1].strip("\n")
-            #此处比较草率，当自定义header只有key，没有value时此处会出现数组下标越界，所以按理说应判断tmp长度。但是现在是2018年10月4日凌晨04:55， 我真的好困。。。就这样写吧，都一样。
+            v = ""
+            if len(tmp) >= 2:
+                v = tmp[1].strip("\n")
+            k = tmp.strip("\n")
+            HEADER[k.strip("\r\n")] = v.string("\r\n")
+            
     except:
         print("\n\033[1;31m[!]\033[0m Cant open the request header file: %s"%(file))
         exit()
@@ -141,16 +145,14 @@ for opt_n,opt_v in arg[0]:
 if len(sys.argv) < 2 or sys.argv[1] == "-h":
     help()
 DOMAIN = sys.argv[1]
-'''
 try:
     h = requests.get(url=DOMAIN,headers=HEADER,timeout=3)
 except:
     print("\033[1;31m[!]\033[0m Cant open the website: %s, check your network"%(DOMAIN))
     exit()
-'''
 loadDict(dirFile)
 
-print("\033[1;34m[*]\033[0m Starting. Threads: %s"%(THREAD))
+print("\033[1;34m[*]\033[0m Starting. Threads: %s\n"%(THREAD))
 threadList = []
 lock = threading.Lock()
 for i in range(THREAD):
@@ -162,6 +164,6 @@ for t in threadList:
     t.join()
 
 if EXIT == False:
-    print("\033[1;32m[+]\033[0m Scan completed")
+    print("\n\033[1;32m[+]\033[0m Scan completed")
 if OUTPUT_FILE:
     saveResult()
