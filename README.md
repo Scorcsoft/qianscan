@@ -1,0 +1,53 @@
+## qianscan
+  这是用Python写的网站目录扫描器，以解决Linux上没有御剑扫描器的尴尬，效率基本能与Windows上的御剑持平，这个扫描器本来打算留到春节假期写，但是由于我白天睡太久，晚上睡不着于是就打开电脑写了。。qianscan，是以某人的名字命名的呢 233333
+
+## usage
+  python qianscan.py domain [OPTIONS]
+  
+## -h
+  显示帮助信息
+  
+## -d
+  指定字典文件，例如使用1.txt作为字典：
+  ```Bash
+  python qianscan.py http://127.0.0.1 -d 1.txt
+  ```
+  如果没有-d参数，默认使用data目录中的default.list文件。
+  如果你觉得我的字典太弱，你也可以用自己的目录字典替换data中的default.list，这样就不用每次都-d指定了。你也可以把字典共享到github。
+  
+## -t
+  指定线程数，例如使用25条线程：
+  ```Bash
+  python qianscan.py http://127.0.0.1 -t 25
+  ```
+  默认20线程，线程数建议25左右比较合适。
+  
+## -i
+  指定http请求头文件：
+  ```Bash
+  python qianscan.py http://127.0.0.1 -i head.txt
+  ```
+  如果需要自定义请求头例如User Agent，你可以把请求头保存到文本文件，然后-i参数指定请求头文本文件。
+  
+## -o
+  指定输出文件，例如将结果保存到1.txt：
+  ```Bash
+  python qianscan.py http://127.0.0.1 -o 1.txt
+  ```
+  可以把扫描结果保存到指定文件中
+  
+## -s
+  指定其他http状态码，默认只显示200状态码的URL，如果你要显示除200之外的其他状态码的URL，可以用-s来指定。
+  例如显示除了200，还显示403状态码的URL：
+  ```Bash
+  python qianscan.py http://127.0.0.1 -s 403
+  ```
+  如果有多个状态码用英文逗号分割，例如：
+  ```Bash
+  python qianscan.py http://127.0.0.1 -s 403,301,302
+  ```
+  
+## output
+  扫描到的目录会显示在终端，url后面的数字是http状态码。200状态码显示为原谅色，其他状态码显示为蓝色。
+    
+ bb完了。。。
