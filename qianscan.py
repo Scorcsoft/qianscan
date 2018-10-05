@@ -27,11 +27,12 @@ TIMEOUT_QUANTITY = 0
 HELP_INFO = '''usage: python dirscan.py domain [OPTIONS]
 
     -h: show this help information
-    -d: dictionary file
-    -t: number of threads
-    -i: set request headers
+    -d: dictionary file, default: data/default.list
+    -t: number of threads, default threads: 55
+    -i: request headers file
     -o: save the result to output file
-    -s: http status code
+    -s: set other HTTP status code to print, default: 200 status code only
+    -q: quiet mode, does not interact when timeout error
 
     more help information: https://github.com/scorcsoft/qianscan
 
@@ -52,6 +53,7 @@ def loadDict(file):
                 DICT.append(i)
                 n += 1
         print("\033[1;32m[+]\033[0m loading completed. %d dictionary"%(n))
+        return n
     except:
         print("\n\033[1;31m[!]\033[0m Cant open the dictionary file: %s"%(file))
         exit()
@@ -124,19 +126,27 @@ class aThread(threading.Thread):
                 else:
                     lock.release()                 
 
-arg = getopt.getopt(sys.argv[2:],'-h-d:-t:-i:-o:-s:',[])
-dirFile = 'data/default.list'
+arg = getopt.getopt(sys.argv[2:],'-h-d:-t:-i:-o:-s:-q',[])
+dir_file = 'data/default.list'
 for opt_n,opt_v in arg[0]:
     if opt_n == "-h":
         help()
+        continue
+    if opt_n == "-q":
+        NEVER_STOP = True
+        continue
     if opt_n == "-d":
-        dirFile = opt_v
+        dir_file = opt_v
+        continue
     if opt_n == "-t":
         THREAD = int(opt_v)
+        continue
     if opt_n == "-i":
         setRequestHeader(opt_v)
+        continue
     if opt_n == "-o":
         OUTPUT_FILE = opt_v
+        continue
     if opt_n == "-s":
         for i in opt_v.split(","):
             STATUS.append(int(i))
@@ -151,9 +161,15 @@ try:
 except:
     print("\033[1;31m[!]\033[0m Cant open the website: %s, check your network"%(DOMAIN))
     exit()
-loadDict(dirFile)
 
-print("\033[1;34m[*]\033[0m Starting. Threads: %s\n"%(THREAD))
+dict_size = loadDict(dir_file)
+if dict_size < (THREAD * 2):
+    THREAD = dict_size / 2
+if THREAD < 1:
+    THREAD = 1
+tmp = "\033[1;31m Quiet mode\033[0m" if NEVER_STOP else ""
+print("\033[1;34m[*]\033[0m Starting. Threads: %s.%s\n"%(THREAD,tmp))
+
 threadList = []
 lock = threading.Lock()
 for i in range(THREAD):
