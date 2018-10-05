@@ -99,6 +99,7 @@ class aThread(threading.Thread):
                                 if OUTPUT_FILE:
                                     OUTPUT.append(url)
                                 lock.release()
+                                continue
                         if STATUS:
                             if lock.acquire():
                                 print("%s   \033[1;32m200\033[0m"%(url))
@@ -110,7 +111,7 @@ class aThread(threading.Thread):
                         if lock.acquire():
                             if TIMEOUT_QUANTITY > 50 and NEVER_STOP == False:
                                 if DICT:
-                                    d = raw_input("\033[1;31m[!]\033[0m It has timeout 50 times here, Maybe your IP is locked, Keep scanning?[y/n]? >_")
+                                    d = raw_input("\033[1;31m[!]\033[0m It has timeout 50 times here, Maybe your IP is locked, Keep scanning?[y/n]?>_ ")
                                     if d == 'y':
                                         NEVER_STOP = True
                                         lock.release()
