@@ -11,13 +11,15 @@
 
 import sys
 import getopt
+import random
+import chardet
 import requests
 import threading
 
 EXIT = False
 DICT = []
 DOMAIN = ''
-HEADER = []
+HEADER = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36"}
 OUTPUT = []
 STATUS = []
 THREAD = 55
@@ -42,11 +44,18 @@ def help():
     print(HELP_INFO)
     exit()
 
+def getEncoding(file):
+    fp = open(file,'rb')
+    d = fp.read()
+    fp.close()
+    return chardet.detect(d["encoding"])
+
 def loadDict(file):
     print("\033[1;34m[*]\033[0m Loading the dictionary file into memory, please wait...")
     try:
         n = 0
-        for i in open(file):
+        encoding = getEncoding(file)
+        for i in open(file,encoding=encoding): #thank you for the bug report from "Hu1J", https://github.com/Scorcsoft/qianscan/issues/1
             i = i.strip("\r\n") # for Linux
             i = i.strip("\n") # for bugdows
             if i:
@@ -162,11 +171,20 @@ except:
     print("\033[1;31m[!]\033[0m Cant open the website: %s, check your network"%(DOMAIN))
     exit()
 
+impossibleUrl = ''
+for i in range(255):
+    impossibleUrl += chr(random.randint(97,123))
+h = requests.get(url = "%s/%s"%(DOMAIN,impossibleUrl),headers=HEADER)
+if h.status_code == 200:
+    if raw_input("\033[1;31m[!]\033[0m Maybe all url will return a 200 status code, Keep the scan?[y/n]: ") != 'y':
+        exit()
+
 dict_size = loadDict(dir_file)
 if dict_size < (THREAD * 2):
     THREAD = dict_size / 2
 if THREAD < 1:
     THREAD = 1
+print("\033[1;34m[*]\033[0m This project will rewrite when sometime")
 tmp = "\033[1;31m Quiet mode\033[0m" if NEVER_STOP else ""
 print("\033[1;34m[*]\033[0m Starting. Threads: %s.%s\n"%(THREAD,tmp))
 
