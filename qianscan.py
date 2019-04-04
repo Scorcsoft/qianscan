@@ -184,7 +184,7 @@ if dict_size < (THREAD * 2):
     THREAD = dict_size / 2
 if THREAD < 1:
     THREAD = 1
-print("\033[1;34m[*]\033[0m This project will rewrite when sometime")
+print("\033[1;34m[*]\033[0m This project will rewrite")
 tmp = "\033[1;31m Quiet mode\033[0m" if NEVER_STOP else ""
 print("\033[1;34m[*]\033[0m Starting. Threads: %s.%s\n"%(THREAD,tmp))
 
